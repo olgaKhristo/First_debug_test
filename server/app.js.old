@@ -1,0 +1,43 @@
+const express = require('express');
+const cors = require('cors');
+const logger = require("./logger");
+const quotes = require('./quotes');
+
+const app = express();
+app.use(cors());
+app.use(express.json())
+
+app.use(logger);
+
+app.get('/', (req, res) => {
+    res.send(`Welcome to the quotes API! There are ${quotes.length} available.`);
+})
+
+app.get('/quotes', (req, res) => {
+    const randomIndex = Math.floor(Math.random() * quotes.length);
+    const randomQuote = quotes[randomIndex];
+    res.json({quote: randomQuote, allQuotes: quotes})
+    // res.send("All the quotes!");
+})
+
+app.get('/quotes/random', (req, res) => {
+    console.log("get request received")
+    const randIdx = Math.floor(Math.random() * quotes.length);
+    const randomQuote = quotes[randIdx];
+    res.json({quote: randomQuote})
+    // res.send(quotes[randIdx]);
+})
+
+app.get('/quotes/:id', (req, res) => {
+    const idx = req.params.id;
+
+     res.send(quotes[idx]);
+})
+
+app.post("/quotes", (req, res) => {
+    const newQuote = req.body; 
+
+    newQuote["id"] = quotes.length;
+
+    res.status(201).send(newQuote);
+})
